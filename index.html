@@ -66,6 +66,7 @@ h1 {
 let board = ["", "", "", "", "", "", "", "", ""];
 let currentPlayer = "X";
 let isGameOver = false;
+
 const winningCombos = [
   [0,1,2], [3,4,5], [6,7,8],
   [0,3,6], [1,4,7], [2,5,8],
@@ -75,8 +76,7 @@ const winningCombos = [
 document.querySelectorAll('.cell').forEach(cell => {
   cell.addEventListener('click', () => {
     const index = cell.getAttribute('data-index');
-
-    if (board[index] !== "" || isGameOver) return;
+    if (board[index] !== "" || isGameOver || currentPlayer !== "X") return;
 
     board[index] = currentPlayer;
     cell.textContent = currentPlayer;
@@ -87,49 +87,51 @@ document.querySelectorAll('.cell').forEach(cell => {
       return;
     }
 
-    if (board.every(cell => cell !== "")) {
+    if (board.every(val => val !== "")) {
       document.getElementById('message').textContent = "무승부입니다.";
       isGameOver = true;
       return;
     }
 
-    currentPlayer = currentPlayer === "X" ? "O" : "X";
-    document.getElementById('message').textContent = `${currentPlayer} 차례입니다.`;
+    currentPlayer = "O"; // 컴퓨터 차례
+    document.getElementById('message').textContent = "O 차례입니다.";
+
+    setTimeout(() => {
+      computerMove();
+    }, 500);
   });
 });
 
-function checkWinner() {
-  return winningCombos.some(combo => {
-    const [a, b, c] = combo;
-    return board[a] && board[a] === board[b] && board[b] === board[c];
-  });
-}
-    
 function computerMove() {
   if (isGameOver) return;
-  let emptyIndexes = board.map((val, idx) => val === "" ? idx : null).filter(idx => idx !== null);
-  if (emptyIndexes.length === 0) return;
+  let empty = board.map((v, i) => v === "" ? i : null).filter(i => i !== null);
+  if (empty.length === 0) return;
 
-  let move = emptyIndexes[Math.floor(Math.random() * emptyIndexes.length)];
+  let move = empty[Math.floor(Math.random() * empty.length)];
   board[move] = currentPlayer;
   document.querySelector(`.cell[data-index="${move}"]`).textContent = currentPlayer;
 
   if (checkWinner()) {
-    document.getElementById('message').textContent = `🎉 ${currentPlayer} 승리!`;
+    document.getElementById('message').textContent = `😎 ${currentPlayer} 승리!`;
     isGameOver = true;
     return;
   }
 
-  if (board.every(cell => cell !== "")) {
+  if (board.every(val => val !== "")) {
     document.getElementById('message').textContent = "무승부입니다.";
     isGameOver = true;
     return;
   }
 
-  currentPlayer = "X"; // 다시 사용자 차례
-  document.getElementById('message').textContent = `${currentPlayer} 차례입니다.`;
+  currentPlayer = "X";
+  document.getElementById('message').textContent = "X 차례입니다.";
 }
-    
+
+function checkWinner() {
+  return winningCombos.some(([a,b,c]) => {
+    return board[a] && board[a] === board[b] && board[b] === board[c];
+  });
+}    
   </script>
 </body>
 </html>
