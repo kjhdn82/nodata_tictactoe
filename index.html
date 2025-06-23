@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Tic-Tac-Toe</title>
+  <style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+  background: #f7f7f7;
+  margin: 40px;
+}
+
+h1 {
+  color: #333;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-gap: 10px;
+  justify-content: center;
+  margin: 30px auto;
+}
+
+.cell {
+  width: 100px;
+  height: 100px;
+  background-color: #fff;
+  border: 2px solid #666;
+  font-size: 48px;
+  line-height: 100px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s;
+}
+
+.cell:hover {
+  background-color: #eef;
+}
+
+#message {
+  font-size: 18px;
+  margin-top: 20px;
+  color: #444;
+}
+  </style>
+</head>
+<body>
+  <h1>Tic-Tac-Toe</h1>
+  <div class="board">
+    <!-- 3x3 셀: 총 9개 -->
+    <div class="cell" data-index="0"></div>
+    <div class="cell" data-index="1"></div>
+    <div class="cell" data-index="2"></div>
+    <div class="cell" data-index="3"></div>
+    <div class="cell" data-index="4"></div>
+    <div class="cell" data-index="5"></div>
+    <div class="cell" data-index="6"></div>
+    <div class="cell" data-index="7"></div>
+    <div class="cell" data-index="8"></div>
+  </div>
+  <p id="message"></p>
+  
+  <script>
+let board = ["", "", "", "", "", "", "", "", ""];
+let currentPlayer = "X";
+let isGameOver = false;
+const winningCombos = [
+  [0,1,2], [3,4,5], [6,7,8],
+  [0,3,6], [1,4,7], [2,5,8],
+  [0,4,8], [2,4,6]
+];
+
+document.querySelectorAll('.cell').forEach(cell => {
+  cell.addEventListener('click', () => {
+    const index = cell.getAttribute('data-index');
+
+    if (board[index] !== "" || isGameOver) return;
+
+    board[index] = currentPlayer;
+    cell.textContent = currentPlayer;
+
+    if (checkWinner()) {
+      document.getElementById('message').textContent = `🎉 ${currentPlayer} 승리!`;
+      isGameOver = true;
+      return;
+    }
+
+    if (board.every(cell => cell !== "")) {
+      document.getElementById('message').textContent = "무승부입니다.";
+      isGameOver = true;
+      return;
+    }
+
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+    document.getElementById('message').textContent = `${currentPlayer} 차례입니다.`;
+  });
+});
+
+function checkWinner() {
+  return winningCombos.some(combo => {
+    const [a, b, c] = combo;
+    return board[a] && board[a] === board[b] && board[b] === board[c];
+  });
+}
+    
+  </script>
+</body>
+</html>
